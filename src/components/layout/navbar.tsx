@@ -6,7 +6,8 @@ import { Menu, X, ArrowUpRight, Download } from "lucide-react";
 import { useState } from "react";
 import { motion } from "motion/react";
 import { Magnetic } from "@/components/animations/magnetic";
-import { site } from "@/data/site";
+import { site as staticSite } from "@/data/site";
+import type { SiteSettings } from "@/lib/portfolio-repository";
 
 const links = [
   { href: "/", label: "Home" },
@@ -16,7 +17,7 @@ const links = [
   { href: "/contact", label: "Contact" },
 ];
 
-export function Navbar() {
+export function Navbar({ site = staticSite }: { site?: SiteSettings }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 

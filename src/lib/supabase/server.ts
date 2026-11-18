@@ -52,6 +52,9 @@ export function createServiceRoleClient() {
       persistSession: false,
       autoRefreshToken: false,
     },
+    global: {
+      fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
+    },
   });
 }
 
@@ -68,6 +71,9 @@ export function createPublicReadClient() {
       persistSession: false,
       autoRefreshToken: false,
     },
+    global: {
+      fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
+    },
   });
 }
 
@@ -77,6 +83,8 @@ export type SystemDiagnostics = {
   supabaseServiceKeyConfigured: boolean;
   resendApiKeyConfigured: boolean;
   resendKeyValidFormat: boolean;
+  schemaTablesReady?: boolean;
+  schemaNote?: string;
   adminEmail: string;
   contactToEmail: string;
 };
@@ -92,4 +100,42 @@ export function getSystemDiagnostics(): SystemDiagnostics {
     adminEmail: process.env.ADMIN_EMAIL || "tharukabandara821@gmail.com",
     contactToEmail: process.env.CONTACT_TO_EMAIL || "tharukabandara821@gmail.com",
   };
+}
+
+export async function getSystemDiagnosticsWithSchema(): Promise<SystemDiagnostics> {
+  const base = getSystemDiagnostics();
+  const supabase = createServiceRoleClient();
+  if (!supabase) {
+    return {
+      ...base,
+      schemaTablesReady: false,
+      schemaNote: "Supabase keys not configured yet",
+    };
+  }
+
+  try {
+    const { count, error } = await supabase
+      .from("projects")
+      .select("slug", { count: "exact", head: true });
+
+    if (error) {
+      return {
+        ...base,
+        schemaTablesReady: false,
+        schemaNote: `Run 001_init_portfolio_schema.sql in Supabase SQL Editor (${error.message})`,
+      };
+    }
+
+    return {
+      ...base,
+      schemaTablesReady: true,
+      schemaNote: `Schema ready (${count ?? 0} projects in DB)`,
+    };
+  } catch {
+    return {
+      ...base,
+      schemaTablesReady: false,
+      schemaNote: "Could not reach Supabase database",
+    };
+  }
 }

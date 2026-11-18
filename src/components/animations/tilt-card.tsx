@@ -65,7 +65,10 @@ export function TiltCard({
   }
 
   return (
-    <div style={{ perspective: "1100px" }} className="h-full">
+    <div
+      style={{ perspective: "1100px" }}
+      className={className.includes("h-full") ? "h-full" : undefined}
+    >
       <motion.div
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
@@ -76,7 +79,7 @@ export function TiltCard({
         }}
         whileHover={{ scale: 1.015 }}
         transition={{ type: "spring", stiffness: 260, damping: 20 }}
-        className={`relative h-full ${className}`}
+        className={`relative ${className}`}
       >
         <motion.div
           aria-hidden="true"

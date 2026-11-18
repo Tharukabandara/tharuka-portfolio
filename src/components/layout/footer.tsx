@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { ArrowUpRight, Download, Github, Linkedin, Mail, MapPin } from "lucide-react";
-import { site } from "@/data/site";
+import { site as staticSite } from "@/data/site";
+import type { SiteSettings } from "@/lib/portfolio-repository";
 
-export function Footer() {
+export function Footer({ site = staticSite }: { site?: SiteSettings }) {
   return (
     <footer className="border-t border-white/[0.08] bg-[#070a0e]">
       <div className="container grid gap-10 py-14 md:grid-cols-[1.3fr_0.8fr_0.9fr]">

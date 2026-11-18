@@ -136,7 +136,16 @@ export function AdminDashboard({
       const res = await fetch("/api/admin/seed", { method: "POST" });
       const data = await res.json();
       setBanner({ ok: Boolean(data.ok), text: data.message });
-      if (data.ok) router.refresh();
+      if (data.ok) {
+        if (data.cvPath || data.portraitPath) {
+          setSiteState((prev) => ({
+            ...prev,
+            cvPath: data.cvPath || prev.cvPath,
+            portraitPath: data.portraitPath || prev.portraitPath,
+          }));
+        }
+        router.refresh();
+      }
     } catch {
       setBanner({ ok: false, text: "Network error while seeding database." });
     } finally {

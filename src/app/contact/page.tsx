@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ArrowUpRight, Clock, Download, Github, Linkedin, Mail, MapPin, Phone } from "lucide-react";
 import { PageIntro } from "@/components/layout/page-intro";
 import { ContactForm } from "@/components/contact/contact-form";
-import { site } from "@/data/site";
+import { getSiteSettings } from "@/lib/portfolio-repository";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -10,7 +10,8 @@ export const metadata: Metadata = {
     "Get in touch with Tharuka Bandara — Full-Stack Software Engineer available for international and remote software engineering opportunities.",
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const site = await getSiteSettings();
   const contacts = [
     {
       label: "Email",

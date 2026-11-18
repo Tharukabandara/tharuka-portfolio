@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/footer";
 import { AmbientBackground } from "@/components/animations/ambient-background";
 import { ScrollProgress } from "@/components/animations/scroll-progress";
 import { site } from "@/data/site";
+import { getSiteSettings } from "@/lib/portfolio-repository";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -52,17 +53,25 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
+  const siteSettings = await getSiteSettings();
+
   return (
-    <html lang="en" className={`${plusJakarta.variable} ${jetbrainsMono.variable}`}>
-      <body>
+    <html
+      lang="en"
+      className={`${plusJakarta.variable} ${jetbrainsMono.variable}`}
+      suppressHydrationWarning
+    >
+      <body suppressHydrationWarning>
         <ScrollProgress />
         <div id="top" className="site-shell relative">
           <AmbientBackground />
           <div className="relative z-10">
-            <Navbar />
+            <Navbar site={siteSettings} />
             <main>{children}</main>
-            <Footer />
+            <Footer site={siteSettings} />
           </div>
         </div>
       </body>

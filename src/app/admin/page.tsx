@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getAuthenticatedAdmin } from "@/lib/supabase/auth";
-import { getSystemDiagnostics, isSupabaseConfigured } from "@/lib/supabase/server";
+import {
+  getSystemDiagnosticsWithSchema,
+  isSupabaseConfigured,
+} from "@/lib/supabase/server";
 import {
   getContactSubmissions,
   getExperiences,
@@ -18,9 +21,11 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
-  const diagnostics = getSystemDiagnostics();
+  const [diagnostics, auth] = await Promise.all([
+    getSystemDiagnosticsWithSchema(),
+    getAuthenticatedAdmin(),
+  ]);
   const supabaseReady = isSupabaseConfigured();
-  const auth = await getAuthenticatedAdmin();
 
   // When Supabase keys are configured in .env.local, enforce strict Admin login
   if (supabaseReady && !auth.isAdmin) {

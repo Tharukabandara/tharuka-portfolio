@@ -20,7 +20,7 @@ export function ProjectCard({ project }: { project: Project }) {
   const isCompleted = project.status === "Completed";
 
   return (
-    <TiltCard maxTilt={9} accent={project.accentColor}>
+    <TiltCard maxTilt={9} accent={project.accentColor} className="h-full">
       <article className="panel-interactive group relative flex h-full flex-col overflow-hidden">
         <div
           className={`relative flex aspect-[16/9] items-center justify-center overflow-hidden border-b border-white/[0.07] ${

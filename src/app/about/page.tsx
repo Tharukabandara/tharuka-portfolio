@@ -59,7 +59,7 @@ export default async function AboutPage() {
         description="I'm Tharuka Bandara, a Full-Stack Software Engineer based in Sri Lanka with hands-on experience across enterprise backend microservices and modern web applications."
       />
 
-      <div className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr]">
+      <div className="grid items-start gap-10 lg:grid-cols-[0.82fr_1.18fr]">
         <Reveal className="space-y-5">
           <TiltCard maxTilt={10} accent="cyan">
             <div className="panel overflow-hidden p-3">

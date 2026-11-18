@@ -182,6 +182,13 @@ export function AdminLoginForm({ diagnostics }: { diagnostics: SystemDiagnostics
                   ? "Found UUID instead of 're_...' secret token — create a new key in Resend and copy the 're_' value"
                   : "Resend API Key (for Contact Email Alerts)",
             },
+            {
+              key: "POSTGRESQL_SCHEMA",
+              ok: Boolean(diagnostics.schemaTablesReady),
+              desc:
+                diagnostics.schemaNote ||
+                "Run supabase/migrations/001_init_portfolio_schema.sql in Supabase SQL Editor",
+            },
           ].map((item) => (
             <div
               key={item.key}

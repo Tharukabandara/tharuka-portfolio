@@ -1,3 +1,4 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createPublicReadClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { site as staticSite } from "@/data/site";
 import { projects as staticProjects, type Project, type ProjectCategory } from "@/data/projects";
@@ -16,6 +17,57 @@ export type ContactSubmissionRecord = {
   created_at: string;
 };
 
+export async function resolveLatestStorageAssets(supabase: SupabaseClient): Promise<{
+  portraitUrl: string | null;
+  cvUrl: string | null;
+  portraitStoragePath: string | null;
+  cvStoragePath: string | null;
+}> {
+  let portraitUrl: string | null = null;
+  let cvUrl: string | null = null;
+  let portraitStoragePath: string | null = null;
+  let cvStoragePath: string | null = null;
+
+  try {
+    const [profileRes, resumeRes] = await Promise.all([
+      supabase.storage.from("portfolio-assets").list("profile", {
+        limit: 50,
+        sortBy: { column: "created_at", order: "desc" },
+      }),
+      supabase.storage.from("portfolio-assets").list("resume", {
+        limit: 50,
+        sortBy: { column: "created_at", order: "desc" },
+      }),
+    ]);
+
+    const validProfiles = (profileRes.data || [])
+      .filter((f) => f.name && !f.name.startsWith("."))
+      .sort((a, b) => b.name.localeCompare(a.name));
+
+    if (validProfiles.length > 0) {
+      portraitStoragePath = `profile/${validProfiles[0].name}`;
+      portraitUrl = supabase.storage
+        .from("portfolio-assets")
+        .getPublicUrl(portraitStoragePath).data.publicUrl;
+    }
+
+    const validResumes = (resumeRes.data || [])
+      .filter((f) => f.name && !f.name.startsWith("."))
+      .sort((a, b) => b.name.localeCompare(a.name));
+
+    if (validResumes.length > 0) {
+      cvStoragePath = `resume/${validResumes[0].name}`;
+      cvUrl = supabase.storage
+        .from("portfolio-assets")
+        .getPublicUrl(cvStoragePath).data.publicUrl;
+    }
+  } catch {
+    // Ignore storage listing errors and fall back to existing paths
+  }
+
+  return { portraitUrl, cvUrl, portraitStoragePath, cvStoragePath };
+}
+
 export async function getSiteSettings(): Promise<SiteSettings> {
   const supabase = createPublicReadClient();
   if (!supabase) return staticSite;
@@ -27,7 +79,28 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       .eq("id", "default")
       .maybeSingle();
 
-    if (error || !data) return staticSite;
+    if (error || !data) {
+      const storageAssets = await resolveLatestStorageAssets(supabase);
+      return {
+        ...staticSite,
+        cvPath: storageAssets.cvUrl || staticSite.cvPath,
+        portraitPath: storageAssets.portraitUrl || staticSite.portraitPath,
+      };
+    }
+
+    let cvPath = data.cv_path || staticSite.cvPath;
+    let portraitPath = data.portrait_path || staticSite.portraitPath;
+
+    // If DB still points to default static paths, check if newer uploaded files exist in Storage
+    if (cvPath === staticSite.cvPath || portraitPath === staticSite.portraitPath) {
+      const storageAssets = await resolveLatestStorageAssets(supabase);
+      if (cvPath === staticSite.cvPath && storageAssets.cvUrl) {
+        cvPath = storageAssets.cvUrl;
+      }
+      if (portraitPath === staticSite.portraitPath && storageAssets.portraitUrl) {
+        portraitPath = storageAssets.portraitUrl;
+      }
+    }
 
     return {
       name: data.name || staticSite.name,
@@ -41,8 +114,8 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       github: data.github || staticSite.github,
       linkedin: data.linkedin || staticSite.linkedin,
       url: staticSite.url,
-      cvPath: data.cv_path || staticSite.cvPath,
-      portraitPath: data.portrait_path || staticSite.portraitPath,
+      cvPath,
+      portraitPath,
       availability: data.availability || staticSite.availability,
       description: data.description || staticSite.description,
       metrics:

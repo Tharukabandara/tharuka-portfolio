@@ -1,7 +1,10 @@
+import { promises as fs } from "fs";
+import path from "path";
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getAuthenticatedAdmin } from "@/lib/supabase/auth";
 import { createServiceRoleClient } from "@/lib/supabase/server";
+import { resolveLatestStorageAssets } from "@/lib/portfolio-repository";
 import { site } from "@/data/site";
 import { projects } from "@/data/projects";
 import { experience } from "@/data/experience";
@@ -24,7 +27,54 @@ export async function POST() {
   }
 
   try {
-    // 1. Seed site_settings
+    // Preserve uploaded portrait & CV URLs (or recover from Supabase Storage if present)
+    const [{ data: existingSite }, storageAssets] = await Promise.all([
+      supabase.from("site_settings").select("*").eq("id", "default").maybeSingle(),
+      resolveLatestStorageAssets(supabase),
+    ]);
+
+    const resolvedCvPath =
+      existingSite?.cv_path && existingSite.cv_path !== site.cvPath
+        ? existingSite.cv_path
+        : storageAssets.cvUrl || site.cvPath;
+
+    const resolvedPortraitPath =
+      existingSite?.portrait_path && existingSite.portrait_path !== site.portraitPath
+        ? existingSite.portrait_path
+        : storageAssets.portraitUrl || site.portraitPath;
+
+    // Mirror cloud storage assets to local public/ fallback files in dev mode
+    try {
+      if (storageAssets.portraitStoragePath) {
+        const { data: portraitBlob } = await supabase.storage
+          .from("portfolio-assets")
+          .download(storageAssets.portraitStoragePath);
+        if (portraitBlob) {
+          const buf = Buffer.from(await portraitBlob.arrayBuffer());
+          const localPortrait = path.join(
+            process.cwd(),
+            "public/images/profile/tharuka-bandara.jpg"
+          );
+          await fs.mkdir(path.dirname(localPortrait), { recursive: true });
+          await fs.writeFile(localPortrait, buf);
+        }
+      }
+      if (storageAssets.cvStoragePath) {
+        const { data: cvBlob } = await supabase.storage
+          .from("portfolio-assets")
+          .download(storageAssets.cvStoragePath);
+        if (cvBlob) {
+          const buf = Buffer.from(await cvBlob.arrayBuffer());
+          const localCv = path.join(process.cwd(), "public/resume/tharuka-bandara-cv.pdf");
+          await fs.mkdir(path.dirname(localCv), { recursive: true });
+          await fs.writeFile(localCv, buf);
+        }
+      }
+    } catch {
+      // Ignore read-only filesystem errors in serverless environments
+    }
+
+    // 1. Seed site_settings while preserving uploaded portrait_path and cv_path
     const { error: siteErr } = await supabase.from("site_settings").upsert({
       id: "default",
       name: site.name,
@@ -37,8 +87,8 @@ export async function POST() {
       phone: site.phone,
       github: site.github,
       linkedin: site.linkedin,
-      cv_path: site.cvPath,
-      portrait_path: site.portraitPath,
+      cv_path: resolvedCvPath,
+      portrait_path: resolvedPortraitPath,
       availability: site.availability,
       description: site.description,
       metrics: site.metrics,
@@ -119,7 +169,9 @@ export async function POST() {
 
     return NextResponse.json({
       ok: true,
-      message: `Seeded 1 site profile, ${projectRows.length} projects, and ${expRows.length} experience records into Supabase PostgreSQL.`,
+      cvPath: resolvedCvPath,
+      portraitPath: resolvedPortraitPath,
+      message: `Seeded 1 site profile (preserving uploaded Portrait & CV), ${projectRows.length} projects, and ${expRows.length} experience records into Supabase PostgreSQL.`,
     });
   } catch (err) {
     return NextResponse.json(

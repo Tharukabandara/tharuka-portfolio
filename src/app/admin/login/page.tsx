@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getSystemDiagnostics } from "@/lib/supabase/server";
+import { getSystemDiagnosticsWithSchema } from "@/lib/supabase/server";
 import { AdminLoginForm } from "@/components/admin/admin-login-form";
 
 export const metadata: Metadata = {
@@ -7,8 +7,10 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function AdminLoginPage() {
-  const diagnostics = getSystemDiagnostics();
+export const dynamic = "force-dynamic";
+
+export default async function AdminLoginPage() {
+  const diagnostics = await getSystemDiagnosticsWithSchema();
 
   return (
     <div className="container section-space">
