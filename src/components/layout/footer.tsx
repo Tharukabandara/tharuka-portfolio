@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Download, Github, Linkedin, Mail, MapPin } from "lucide-react";
 import { site as staticSite } from "@/data/site";
@@ -9,9 +10,13 @@ export function Footer({ site = staticSite }: { site?: SiteSettings }) {
       <div className="container grid gap-10 py-14 md:grid-cols-[1.3fr_0.8fr_0.9fr]">
         <div>
           <Link href="/" className="inline-flex items-center gap-2.5 text-lg font-black tracking-[-.06em]">
-            <span className="grid h-7 w-7 place-items-center rounded-md border border-[#20cfff]/30 bg-[#20cfff]/10 font-mono-code text-[11px] font-bold text-[#20cfff]">
-              TB
-            </span>
+            <Image
+              src="/logo.svg"
+              alt="Tharuka Bandara Logo"
+              width={30}
+              height={30}
+              className="rounded-md"
+            />
             <span>
               {site.shortName}
               <span className="text-[#c8ff00]">.</span>

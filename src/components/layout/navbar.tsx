@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ArrowUpRight, Download } from "lucide-react";
@@ -28,9 +29,13 @@ export function Navbar({ site = staticSite }: { site?: SiteSettings }) {
     <header className="sticky top-0 z-50 border-b border-white/[0.07] bg-[#090c10]/85 backdrop-blur-xl">
       <div className="container flex h-[76px] items-center justify-between">
         <Link href="/" className="group flex items-center gap-2.5 text-lg font-black tracking-[-.06em]">
-          <span className="grid h-8 w-8 place-items-center rounded-lg border border-[#20cfff]/30 bg-[#20cfff]/10 font-mono-code text-xs font-bold text-[#20cfff] transition group-hover:border-[#c8ff00]/50 group-hover:text-[#c8ff00]">
-            TB
-          </span>
+          <Image
+            src="/logo.svg"
+            alt="Tharuka Bandara Logo"
+            width={34}
+            height={34}
+            className="rounded-lg transition-transform duration-200 group-hover:scale-105"
+          />
           <span>
             {site.shortName}
             <span className="text-[#c8ff00]">.</span>

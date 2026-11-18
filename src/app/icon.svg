@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="bg-grad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#111924" />
+      <stop offset="100%" stop-color="#090c10" />
+    </linearGradient>
+    <linearGradient id="border-grad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#20cfff" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#c8ff00" stop-opacity="0.75" />
+    </linearGradient>
+    <linearGradient id="text-grad" x1="12" y1="18" x2="50" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#9df0ff" />
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded Squircle Background -->
+  <rect x="2" y="2" width="60" height="60" rx="15" fill="url(#bg-grad)" stroke="url(#border-grad)" stroke-width="2.5" />
+
+  <!-- Subtle Inner Glow -->
+  <circle cx="48" cy="14" r="18" fill="#20cfff" fill-opacity="0.12" />
+
+  <!-- Monogram 'T' -->
+  <path d="M13 21H29V26.2H23.9V44H18.1V26.2H13V21Z" fill="url(#text-grad)" />
+
+  <!-- Monogram 'B' -->
+  <path d="M31.5 21H41.8C45.9 21 48.5 23.1 48.5 26.6C48.5 29.1 47.0 30.9 44.8 31.6C47.5 32.3 49.2 34.3 49.2 37.2C49.2 41.3 46.2 44 41.6 44H31.5V21ZM37.1 30.1H40.8C42.5 30.1 43.5 29.2 43.5 27.6C43.5 26.1 42.5 25.3 40.8 25.3H37.1V30.1ZM37.1 39.6H41.2C43.1 39.6 44.2 38.6 44.2 36.9C44.2 35.2 43.1 34.2 41.1 34.2H37.1V39.6Z" fill="#20cfff" />
+
+  <!-- Electric Lime Accent Dot '.' -->
+  <circle cx="53.5" cy="40.5" r="3.6" fill="#c8ff00" />
+</svg>
