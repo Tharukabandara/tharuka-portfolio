@@ -19,7 +19,6 @@ import {
   RefreshCw,
   Save,
   Settings,
-  ShieldCheck,
   Trash2,
   Upload,
   UserCheck,
@@ -509,86 +508,11 @@ export function AdminDashboard({
         })}
       </div>
 
-      {/* TAB 1: OVERVIEW & SETUP GUIDE */}
+      {/* TAB 1: OVERVIEW */}
       {activeTab === "overview" && (
-        <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="panel p-7 sm:p-8">
-            <span className="eyebrow">
-              <ShieldCheck size={14} /> Step-by-Step Setup Guide
-            </span>
-            <h2 className="mt-3 text-xl font-bold text-white">
-              How to Connect Supabase PostgreSQL & Resend
-            </h2>
-            <ol className="mt-5 space-y-4 text-xs leading-6 text-[#9aa8b8]">
-              <li className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
-                <strong className="font-mono-code text-[#20cfff]">
-                  Step 1 — Create Supabase Project & Run SQL Migration:
-                </strong>
-                <p className="mt-1">
-                  Create a free project at{" "}
-                  <a
-                    href="https://supabase.com/dashboard"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-white underline"
-                  >
-                    supabase.com/dashboard
-                  </a>
-                  . Open the <strong>SQL Editor</strong>, paste the contents of{" "}
-                  <code className="text-[#c8ff00]">
-                    supabase/migrations/001_init_portfolio_schema.sql
-                  </code>
-                  , and click <strong>Run</strong>. This creates your tables, RLS policies, and the{" "}
-                  <code>portfolio-assets</code> storage bucket.
-                </p>
-              </li>
-
-              <li className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
-                <strong className="font-mono-code text-[#20cfff]">
-                  Step 2 — Create Your Admin User in Supabase Auth:
-                </strong>
-                <p className="mt-1">
-                  In Supabase Dashboard → <strong>Authentication → Users → Add User</strong>, create a
-                  user with email{" "}
-                  <code className="text-[#c8ff00]">{diagnostics.adminEmail}</code> and a strong
-                  password (check &ldquo;Auto Confirm User&rdquo;).
-                </p>
-              </li>
-
-              <li className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
-                <strong className="font-mono-code text-[#20cfff]">
-                  Step 3 — Get Resend API Key for Contact Emails:
-                </strong>
-                <p className="mt-1">
-                  Create a free account at{" "}
-                  <a
-                    href="https://resend.com"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-white underline"
-                  >
-                    resend.com
-                  </a>
-                  , generate an API key, and set <code>RESEND_API_KEY</code> in{" "}
-                  <code className="text-[#c8ff00]">.env.local</code>.
-                </p>
-              </li>
-
-              <li className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
-                <strong className="font-mono-code text-[#20cfff]">
-                  Step 4 — Seed Your Database in 1 Click:
-                </strong>
-                <p className="mt-1">
-                  Once signed in to <code>/admin</code>, click the{" "}
-                  <strong>Sync / Seed Database from Code</strong> button on the right to populate
-                  Supabase with your verified projects, experience, and profile settings.
-                </p>
-              </li>
-            </ol>
-          </div>
-
-          <div className="space-y-6">
-            <div className="panel p-7 sm:p-8">
+        <div className="grid gap-8 lg:grid-cols-2">
+          <div className="panel flex flex-col justify-between p-7 sm:p-8">
+            <div>
               <span className="eyebrow-lime">One-Click Database Sync</span>
               <h2 className="mt-3 text-xl font-bold text-white">
                 Sync / Seed Supabase from Code
@@ -598,11 +522,13 @@ export function AdminDashboard({
                 into Supabase PostgreSQL (<code>site_settings</code>, <code>projects</code>, and{" "}
                 <code>experiences</code>).
               </p>
+            </div>
+            <div className="mt-6">
               <button
                 type="button"
                 disabled={busy || !isAuthenticatedAdmin}
                 onClick={handleSeedDatabase}
-                className="button-lime mt-5 text-xs disabled:opacity-50"
+                className="button-lime text-xs disabled:opacity-50"
               >
                 {busy ? (
                   <>
@@ -620,52 +546,55 @@ export function AdminDashboard({
                 </p>
               )}
             </div>
+          </div>
 
-            <div className="panel p-7 sm:p-8">
-              <span className="eyebrow">Live Environment Health</span>
-              <div className="mt-4 space-y-2.5 text-xs">
-                {[
-                  {
-                    label: "Supabase Project URL",
-                    ok: diagnostics.supabaseUrlConfigured,
-                  },
-                  {
-                    label: "Supabase Anon Key",
-                    ok: diagnostics.supabaseAnonKeyConfigured,
-                  },
-                  {
-                    label: "Supabase Service Role Key",
-                    ok: diagnostics.supabaseServiceKeyConfigured,
-                  },
-                  {
-                    label: "Resend Email API Key",
-                    ok: diagnostics.resendApiKeyConfigured && diagnostics.resendKeyValidFormat,
-                    statusText: !diagnostics.resendApiKeyConfigured
-                      ? "Pending (.env.local)"
-                      : !diagnostics.resendKeyValidFormat
-                      ? "Needs 're_...' token (found UUID)"
-                      : "Connected (re_...)",
-                  },
-                ].map((item) => (
-                  <div
-                    key={item.label}
-                    className="flex items-center justify-between rounded-lg border border-white/[0.07] bg-white/[0.02] px-4 py-2.5"
+          <div className="panel p-7 sm:p-8">
+            <span className="eyebrow">Live Environment Health</span>
+            <h2 className="mt-3 text-xl font-bold text-white">
+              Supabase &amp; Resend Status
+            </h2>
+            <div className="mt-4 space-y-2.5 text-xs">
+              {[
+                {
+                  label: "Supabase Project URL",
+                  ok: diagnostics.supabaseUrlConfigured,
+                },
+                {
+                  label: "Supabase Anon Key",
+                  ok: diagnostics.supabaseAnonKeyConfigured,
+                },
+                {
+                  label: "Supabase Service Role Key",
+                  ok: diagnostics.supabaseServiceKeyConfigured,
+                },
+                {
+                  label: "Resend Email API Key",
+                  ok: diagnostics.resendApiKeyConfigured && diagnostics.resendKeyValidFormat,
+                  statusText: !diagnostics.resendApiKeyConfigured
+                    ? "Pending (.env.local)"
+                    : !diagnostics.resendKeyValidFormat
+                    ? "Needs 're_...' token (found UUID)"
+                    : "Connected (re_...)",
+                },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="flex items-center justify-between rounded-lg border border-white/[0.07] bg-white/[0.02] px-4 py-2.5"
+                >
+                  <span className="text-[#dce5ed]">{item.label}</span>
+                  <span
+                    className={`font-mono-code text-[11px] font-semibold ${
+                      item.ok ? "text-[#c8ff00]" : "text-amber-300"
+                    }`}
                   >
-                    <span className="text-[#dce5ed]">{item.label}</span>
-                    <span
-                      className={`font-mono-code text-[11px] font-semibold ${
-                        item.ok ? "text-[#c8ff00]" : "text-amber-300"
-                      }`}
-                    >
-                      {"statusText" in item && item.statusText
-                        ? item.statusText
-                        : item.ok
-                        ? "Connected"
-                        : "Pending (.env.local)"}
-                    </span>
-                  </div>
-                ))}
-              </div>
+                    {"statusText" in item && item.statusText
+                      ? item.statusText
+                      : item.ok
+                      ? "Connected"
+                      : "Pending (.env.local)"}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>

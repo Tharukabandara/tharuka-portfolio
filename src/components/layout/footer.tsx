@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Download, Github, Linkedin, Mail, MapPin } from "lucide-react";
+import { ArrowUpRight, Github, Linkedin, Mail, MapPin } from "lucide-react";
 import { site as staticSite } from "@/data/site";
 import type { SiteSettings } from "@/lib/portfolio-repository";
 
@@ -83,13 +83,6 @@ export function Footer({ site = staticSite }: { site?: SiteSettings }) {
                 className="grid h-9 w-9 place-items-center rounded-lg border border-white/10 bg-white/[0.02] text-[#9aa8b8] transition hover:border-[#20cfff]/40 hover:text-[#20cfff]"
               >
                 <Mail size={16} />
-              </a>
-              <a
-                href={site.cvPath}
-                download
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.02] px-3 text-[11px] font-semibold text-[#dce5ed] transition hover:border-[#c8ff00]/40 hover:text-[#c8ff00]"
-              >
-                CV <Download size={13} />
               </a>
             </div>
           </div>

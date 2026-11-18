@@ -297,11 +297,6 @@ export default async function HomePage() {
                   Full experience timeline <ArrowUpRight size={15} />
                 </Link>
               </Magnetic>
-              <Magnetic strength={0.25}>
-                <a href={site.cvPath} download className="button-secondary">
-                  Download CV <Download size={15} />
-                </a>
-              </Magnetic>
             </div>
           </Reveal>
 
@@ -377,11 +372,6 @@ export default async function HomePage() {
                 <Link href="/contact" className="button-primary">
                   Start a conversation <ArrowUpRight size={16} />
                 </Link>
-              </Magnetic>
-              <Magnetic strength={0.28}>
-                <a href={site.cvPath} download className="button-secondary">
-                  Download CV (PDF) <Download size={15} />
-                </a>
               </Magnetic>
             </div>
           </Reveal>
